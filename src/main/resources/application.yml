@@ -1,0 +1,7 @@
+spring:
+  data:
+    mongodb:
+      database: bookhub
+      port: 27017
+      host: localhost
+#  mongodb://localhost:27017/
