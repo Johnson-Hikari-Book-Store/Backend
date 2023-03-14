@@ -14,8 +14,7 @@ public class UserDetailsEntity {
     private String country;
     private String state;
     private String address;
-    private String email;
     private String phoneNum;
     private String profileImage;
-    private String prefferedCommunicationMeans;
+    private String preferredCommunicationMeans;
 }

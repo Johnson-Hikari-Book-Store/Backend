@@ -12,6 +12,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class AuthService {
 
@@ -25,15 +28,18 @@ public class AuthService {
     public UserEntity register(RegisterDto registerDto) {
         return userService.createNewUser(registerDto);
     }
-    public String loginUser(LoginDto loginDto) {
-
+    public Map<String, Object> loginUser(LoginDto loginDto) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getEmail(),
                         loginDto.getPassword()
                 )
         );
+        Map<String, Object> response = new HashMap<>();
         UserEntity user = userService.getUserByEmail(loginDto.getEmail());
-        return jwtService.generateJwtToken(user);
+        String token = jwtService.generateJwtToken(user);
+        response.put("user" , user);
+        response.put("token" , token);
+        return  response;
     }
 }

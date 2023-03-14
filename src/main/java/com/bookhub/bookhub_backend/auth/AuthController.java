@@ -6,8 +6,6 @@ import com.bookhub.bookhub_backend.user.entities.UserEntity;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,27 +27,26 @@ public class AuthController {
             ) {
         Map<String, Object> response = new HashMap<>();
         UserEntity user = authService.register(registerDto);
-        LoginDto loginDto = new LoginDto(user.getEmail(), user.getPassword());
-        String token = authService.loginUser(loginDto);
-        response.put("success", true);
-        response.put("message", "User Logged in successfully");
-        response.put("data" , user);
-        response.put("token", token);
+        LoginDto loginDto = new LoginDto(registerDto.getEmail(), registerDto.getPassword());
+        Map<String, Object> data = authService.loginUser(loginDto);
+        System.out.println(data);
+        response.put("success" , true);
+        response.put("message", "User Signed up successfully");
+        response.put("data" , data.get("user"));
+        response.put("token", data.get("token"));
         return ResponseEntity.ok(response);
     }
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>>login(
-            @Valid @RequestBody LoginDto loginDto,
-            Authentication authentication
+            @Valid @RequestBody LoginDto loginDto
     ) {
-        String token = authService.loginUser(loginDto);
-        UserEntity user = (UserEntity) authentication.getDetails();
-        System.out.println(user);
+        Map<String, Object> data = authService.loginUser(loginDto);
+
         Map<String, Object> response = new HashMap<>();
         response.put("success" , true);
         response.put("message", "User Logged in successfully");
-        response.put("data" , user);
-        response.put("token", token);
+         response.put("data" , data.get("user"));
+        response.put("token", data.get("token"));
         return ResponseEntity.ok(response);
     }
 }

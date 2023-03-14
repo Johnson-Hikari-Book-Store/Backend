@@ -1,10 +1,14 @@
+
 spring:
   data:
     mongodb:
       database: bookhub
       uri: mongodb://localhost:27017
-#
+      auto-index-creation: true
+  #
   application:
     jwt:
-      secret-key: "Bookhub_Secret"
       expiration-time: 3200
+      secret: Bookhub_Secret
+server:
+  port: 5003

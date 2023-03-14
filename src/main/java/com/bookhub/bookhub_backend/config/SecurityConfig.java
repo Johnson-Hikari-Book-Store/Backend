@@ -26,57 +26,60 @@ public class SecurityConfig {
 
     @Autowired
     private JwtFilter jwtFilter;
+
     @Bean
-    public SecurityFilterChain securityFilterChain (HttpSecurity http) throws Exception{
-//        http
-//                .csrf()
-//                .disable()
-//                .authorizeHttpRequests()
-//                .requestMatchers("/api/v1/auth/**")
-//                .permitAll()
-//                .anyRequest()
-//                .authenticated()
-//                .and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .authenticationProvider(authenticationProvider)
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        // Enable CORS and disable CSRF
-        http = http.cors().and().csrf().disable();
-
-        // Set session management to stateless
-        http = http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
-
-        // Set unauthorized requests exception handler
-        http = http
-                .exceptionHandling()
-                .authenticationEntryPoint(
-                        (request, response, ex) -> {
-                            response.sendError(
-                                    HttpServletResponse.SC_UNAUTHORIZED,
-                                    ex.getMessage()
-                            );
-                        }
-                )
-                .and();
-
-        // Set permissions on endpoints
-        http.authorizeHttpRequests()
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                .anyRequest().authenticated();
-
-        // Add authentication Provider
-        http.authenticationProvider(authenticationProvider);
-
-        // Add JWT token filter
-        http.addFilterBefore(
-                jwtFilter,
-                UsernamePasswordAuthenticationFilter.class
-        );
-        System.out.println(http.toString());
-        return  http.build();
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .cors()
+                .and()
+                .csrf()
+                .disable()
+                .authorizeHttpRequests()
+                .requestMatchers("/api/v1/auth/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        //     Enable CORS and disable CSRF
+//        http = http.cors().and().csrf().disable();
+//
+//        // Set session management to stateless
+//        http = http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
+//
+//        // Set unauthorized requests exception handler
+//        http = http
+//                .exceptionHandling()
+//                .authenticationEntryPoint(
+//                        (request, response, ex) -> {
+//                            response.sendError(
+//                                    HttpServletResponse.SC_UNAUTHORIZED,
+//                                    ex.getMessage()
+//                            );
+//                        }
+//                )
+//                .and();
+//
+//        // Set permissions on endpoints
+//        http.authorizeHttpRequests()
+//                .requestMatchers("/api/v1/auth/**").permitAll()
+//                .anyRequest().authenticated();
+//
+//        // Add authentication Provider
+//        http.authenticationProvider(authenticationProvider);
+//
+//        // Add JWT token filter
+//        http.addFilterBefore(
+//                jwtFilter,
+//                UsernamePasswordAuthenticationFilter.class
+//        );
+        return http.build();
     }
+
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source =

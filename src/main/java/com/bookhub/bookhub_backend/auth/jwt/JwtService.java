@@ -3,6 +3,9 @@ package com.bookhub.bookhub_backend.auth.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.impl.TextCodec;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -15,19 +18,29 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    @Value("${spring.application.jwt.secret-key}")
-    private String JWT_SECRET;
+//    @Value("${spring.application.jwt.secret}")
+    private String JWT_SECRET = "294A404E635266556A586E3272357538782F4125442A472D4B6150645367566B";
 
     @Value("${spring.application.jwt.expiration-time}")
     private Long JWT_EXPIRY_TIME;
 
     public String getUsername(String token) {
-        final Claims claims = Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJwt(token).getBody();
+        final Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
         return claims.getSubject();
     }
 
     private Date getExpiration(String token) {
-        final Claims claims = Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJwt(token).getBody();
+        final Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
         return claims.getExpiration();
     }
 
@@ -45,7 +58,7 @@ public class JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + (JWT_EXPIRY_TIME * 1000)))
-                .signWith(SignatureAlgorithm.HS256, JWT_SECRET)
+                .signWith(getSigningKey())
                 .compact();
     }
 
@@ -59,4 +72,8 @@ public class JwtService {
         return getExpiration(token).after(new Date());
     }
 
+    private Key getSigningKey() {
+        byte[] keyByte = Decoders .BASE64.decode(JWT_SECRET);
+        return Keys.hmacShaKeyFor(keyByte);
+    }
 }

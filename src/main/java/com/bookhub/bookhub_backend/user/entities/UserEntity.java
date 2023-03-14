@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,24 +17,32 @@ import java.util.List;
 
 @Data
 @Builder
-@Document
+@Document("User")
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserEntity implements UserDetails {
     @Id
     private String id;
     private String name;
+
+    @Indexed(unique = true)
     private String email;
     private String username;
     private String password;
 
     private String role = "user";
 
+    private UserDetailsEntity userDetails;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));
     }
 
+    @Override
+    public String getUsername() {
+        return email;
+    }
     @Override
     public boolean isAccountNonExpired() {
         return true;
